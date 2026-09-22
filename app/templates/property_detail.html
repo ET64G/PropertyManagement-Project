@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}{% if prop %}{{ prop.title }}{% else %}My property{% endif %} · {{ brand_name }}{% endblock %}
+{% block content %}
+  {% if prop is none %}
+    <h1 class="h3">My property</h1>
+    <div class="alert alert-info">No property is assigned to your account yet. Ask your landlord to assign one.</div>
+  {% else %}
+    <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
+      <div>
+        <h1 class="h3 mb-1">{{ prop.title }}</h1>
+        <p class="text-muted mb-0">{{ prop.address_line }}, {{ prop.city }}</p>
+      </div>
+      {% if not read_only %}
+        <div class="d-flex gap-2">
+          <a class="btn btn-outline-dark" href="{{ url_for('properties.edit_property', property_id=prop.id) }}">Edit</a>
+          <form method="post" action="{{ url_for('properties.delete_property', property_id=prop.id) }}" onsubmit="return confirm('Delete this property?');">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="btn btn-outline-danger" type="submit">Delete</button>
+          </form>
+        </div>
+      {% endif %}
+    </div>
+    <p>
+      <span class="badge {{ 'text-bg-success' if prop.status == 'available' else 'text-bg-secondary' }}">{{ prop.status|capitalize }}</span>
+    </p>
+    <dl class="row">
+      <dt class="col-sm-3">Bedrooms</dt>
+      <dd class="col-sm-9">{{ prop.bedrooms }}</dd>
+      <dt class="col-sm-3">Bathrooms</dt>
+      <dd class="col-sm-9">{{ prop.bathrooms }}</dd>
+      <dt class="col-sm-3">Garden</dt>
+      <dd class="col-sm-9">{{ prop.garden_label }}</dd>
+    </dl>
+    {% if prop.description %}
+      <p>{{ prop.description }}</p>
+    {% endif %}
+    <h2 class="h5 mt-4">Photos</h2>
+    {% if prop.images %}
+      <div class="row g-3">
+        {% for image in prop.images %}
+          <div class="col-md-4">
+            <img class="img-fluid rounded mb-2" src="{{ url_for('properties.serve_upload', property_id=prop.id, filename=image.stored_name) }}" alt="{{ image.caption or prop.title }}">
+            {% if image.is_primary %}<span class="badge text-bg-dark mb-2">Primary</span>{% endif %}
+            {% if not read_only %}
+              <form method="post" action="{{ url_for('properties.delete_image', property_id=prop.id, image_id=image.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="btn btn-sm btn-outline-danger" type="submit">Remove photo</button>
+              </form>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="text-muted">No photos yet.</p>
+    {% endif %}
+    {% if not read_only %}
+      <a class="btn btn-link px-0 mt-3" href="{{ url_for('properties.list_properties') }}">Back to properties</a>
+    {% endif %}
+  {% endif %}
+{% endblock %}

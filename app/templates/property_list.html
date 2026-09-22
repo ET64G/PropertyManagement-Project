@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Properties · {{ brand_name }}{% endblock %}
+{% block content %}
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+    <h1 class="h3 mb-0">Your properties</h1>
+    <div class="d-flex gap-2">
+      <a class="btn btn-dark" href="{{ url_for('properties.create_property') }}">Add property</a>
+      <a class="btn btn-outline-dark" href="{{ url_for('tenants.create_tenant') }}">Add tenant</a>
+    </div>
+  </div>
+  {% if properties %}
+    <div class="row g-4">
+      {% for prop in properties %}
+        <div class="col-md-6 col-lg-4">
+          <div class="card h-100 shadow-sm">
+            {% if prop.primary_image %}
+              <img class="card-img-top property-photo" src="{{ url_for('properties.serve_upload', property_id=prop.id, filename=prop.primary_image.stored_name) }}" alt="{{ prop.title }}">
+            {% else %}
+              <div class="property-photo d-flex align-items-center justify-content-center text-muted">No photo</div>
+            {% endif %}
+            <div class="card-body">
+              <h2 class="h5 card-title">{{ prop.title }}</h2>
+              <p class="text-muted mb-2">{{ prop.city }}</p>
+              <p class="mb-1">{{ prop.bedrooms }} bedrooms · {{ prop.bathrooms }} bathrooms</p>
+              <p class="mb-2">Garden: {{ prop.garden_label }}</p>
+              <span class="badge {{ 'text-bg-success' if prop.status == 'available' else 'text-bg-secondary' }}">{{ prop.status|capitalize }}</span>
+            </div>
+            <div class="card-footer bg-white border-0 pb-3">
+              <a class="btn btn-sm btn-outline-dark" href="{{ url_for('properties.property_detail', property_id=prop.id) }}">View</a>
+              <a class="btn btn-sm btn-outline-dark" href="{{ url_for('properties.edit_property', property_id=prop.id) }}">Edit</a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="card shadow-sm">
+      <div class="card-body text-center py-5">
+        <p class="mb-3">You have not added a property yet.</p>
+        <a class="btn btn-dark" href="{{ url_for('properties.create_property') }}">Add property</a>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}

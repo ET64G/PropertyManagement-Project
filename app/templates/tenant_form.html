@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Add tenant · {{ brand_name }}{% endblock %}
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-lg-7">
+      <h1 class="h3 mb-2">Add tenant</h1>
+      <p class="text-muted">The tenant uses this email and temporary password to log in, and can view only the property you select.</p>
+      {% if not properties %}
+        <div class="alert alert-info">Add a property before you create a tenant.</div>
+        <a class="btn btn-dark" href="{{ url_for('properties.create_property') }}">Add property</a>
+      {% else %}
+        <form method="post" novalidate>
+          {{ form.hidden_tag() }}
+          <div class="mb-3">
+            <label class="form-label" for="full_name">Full name</label>
+            {{ form.full_name(class="form-control", id="full_name") }}
+            {% for error in form.full_name.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="email">Email</label>
+            {{ form.email(class="form-control", id="email") }}
+            {% for error in form.email.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="password">Temporary password</label>
+            {{ form.password(class="form-control", id="password") }}
+            <div class="form-text">At least 8 characters. Share this with the tenant.</div>
+            {% for error in form.password.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="property_id">Property</label>
+            {{ form.property_id(class="form-select", id="property_id") }}
+            {% for error in form.property_id.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+          </div>
+          <button class="btn btn-dark" type="submit">Create tenant</button>
+          <a class="btn btn-link" href="{{ url_for('properties.list_properties') }}">Cancel</a>
+        </form>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}

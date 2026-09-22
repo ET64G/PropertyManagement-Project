@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}{{ brand_name }}{% endblock %}
+{% block content %}
+  <div class="rounded-3 overflow-hidden shadow-sm mb-4 bg-white">
+    <img class="hero-img" src="{{ url_for('static', filename='img/hero.jpg') }}" alt="A house with warm light in the windows">
+  </div>
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <h1 class="h2 mb-3">Rental properties, kept in one place</h1>
+      <p class="lead">
+        {{ brand_name }} helps landlords keep each rental property, its photos, and tenant access together.
+        Landlords add the homes they manage. Tenants sign in and see only the property assigned to them.
+      </p>
+      <div class="d-flex flex-wrap gap-2 mt-4">
+        {% if current_user.is_authenticated and current_user.is_landlord %}
+          <a class="btn btn-dark" href="{{ url_for('properties.list_properties') }}">Your properties</a>
+        {% elif current_user.is_authenticated and current_user.is_tenant %}
+          <a class="btn btn-dark" href="{{ url_for('properties.my_property') }}">Your property</a>
+        {% else %}
+          <a class="btn btn-dark" href="{{ url_for('auth.login') }}">Log in</a>
+          <a class="btn btn-outline-dark" href="{{ url_for('auth.register') }}">Register</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}{% if prop %}Edit property{% else %}Add property{% endif %} · {{ brand_name }}{% endblock %}
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <h1 class="h3 mb-3">{% if prop %}Edit property{% else %}Add property{% endif %}</h1>
+      <form method="post" enctype="multipart/form-data" novalidate>
+        {{ form.hidden_tag() }}
+        <div class="mb-3">
+          <label class="form-label" for="title">Title</label>
+          {{ form.title(class="form-control", id="title") }}
+          {% for error in form.title.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="address_line">Address</label>
+          {{ form.address_line(class="form-control", id="address_line") }}
+          {% for error in form.address_line.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="city">City</label>
+          {{ form.city(class="form-control", id="city") }}
+          {% for error in form.city.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="description">Description</label>
+          {{ form.description(class="form-control", id="description", rows="4") }}
+          {% for error in form.description.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+        </div>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label" for="bedrooms">Bedrooms</label>
+            {{ form.bedrooms(class="form-control", id="bedrooms", type="number", min="0", step="1") }}
+            {% for error in form.bedrooms.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label" for="bathrooms">Bathrooms</label>
+            {{ form.bathrooms(class="form-control", id="bathrooms", type="number", min="0", step="1") }}
+            {% for error in form.bathrooms.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label" for="has_garden">Garden</label>
+            {{ form.has_garden(class="form-select", id="has_garden") }}
+            {% for error in form.has_garden.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label" for="status">Status</label>
+            {{ form.status(class="form-select", id="status") }}
+            {% for error in form.status.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="images">Photos</label>
+          <input class="form-control" type="file" id="images" name="images" accept=".jpg,.jpeg,image/jpeg" multiple>
+          <div class="form-text">One or more JPEG files. Other types are rejected.</div>
+        </div>
+        <button class="btn btn-dark" type="submit">{% if prop %}Save changes{% else %}Save property{% endif %}</button>
+        <a class="btn btn-link" href="{{ url_for('properties.list_properties') }}">Cancel</a>
+      </form>
+      {% if prop and prop.images %}
+        <h2 class="h5 mt-4">Current photos</h2>
+        <div class="row g-3">
+          {% for image in prop.images %}
+            <div class="col-6 col-md-4">
+              <img class="img-fluid rounded mb-2" src="{{ url_for('properties.serve_upload', property_id=prop.id, filename=image.stored_name) }}" alt="{{ prop.title }}">
+              {% if image.is_primary %}<span class="badge text-bg-dark">Primary</span>{% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}
