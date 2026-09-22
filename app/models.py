@@ -104,7 +104,7 @@ class Property(db.Model):
     )
     images = db.relationship(
         "PropertyImage",
-        back_populates="property",
+        back_populates="listing",
         cascade="all, delete-orphan",
         order_by="PropertyImage.id",
     )
@@ -143,7 +143,7 @@ class PropertyImage(db.Model):
         server_default=db.text("0"),
     )
 
-    property = db.relationship("Property", back_populates="images")
+    listing = db.relationship("Property", back_populates="images")
 
     @property
     def stored_name(self) -> str:

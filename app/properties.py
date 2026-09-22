@@ -121,20 +121,29 @@ def _save_images(prop, files):
     folder.mkdir(parents=True, exist_ok=True)
     has_primary = any(image.is_primary for image in prop.images)
     saved_any = False
-    for storage in files:
-        filename = f"{uuid.uuid4().hex}.jpg"
-        storage.save(folder / filename)
-        image = PropertyImage(
-            property_id=prop.id,
-            file_path=f"uploads/{prop.id}/{filename}",
-            is_primary=not has_primary and not saved_any,
-        )
-        saved_any = True
-        db.session.add(image)
+    written = []
+    try:
+        for storage in files:
+            filename = f"{uuid.uuid4().hex}.jpg"
+            path = folder / filename
+            storage.save(path)
+            written.append(path)
+            image = PropertyImage(
+                property_id=prop.id,
+                file_path=f"uploads/{prop.id}/{filename}",
+                is_primary=not has_primary and not saved_any,
+            )
+            saved_any = True
+            db.session.add(image)
+    except Exception:
+        for path in written:
+            if path.is_file():
+                path.unlink()
+        raise
 
 
 def _unlink_image(image):
-    path = Path(current_app.root_path).parent / image.file_path
+    path = Path(current_app.config["UPLOAD_FOLDER"]) / str(image.property_id) / image.stored_name
     if path.is_file():
         path.unlink()
 
